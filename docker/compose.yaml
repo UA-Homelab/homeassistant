@@ -1,0 +1,59 @@
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:latest"
+    ports:
+      - 8123:8123
+    network_mode: host
+    volumes:
+      - /volume2/docker/homeassistant/config:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    restart: unless-stopped
+    privileged: true
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    restart: unless-stopped
+    volumes:
+      - /volume2/docker/mosquitto/config:/mosquitto/config
+      - /volume2/docker/mosquitto/data:/mosquitto/data
+      - /volume2/docker/mosquitto/log:/mosquitto/log
+    ports:
+      - 1883:1883
+      - 9001:9001
+    stdin_open: true
+    tty: true
+  ring-mqtt:
+    container_name: ring-mqtt
+    restart: unless-stopped
+    image: tsightler/ring-mqtt
+    ports:
+      - 8554:8554
+    volumes:
+      - /volume2/docker/ring-mqtt/data:/data
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+  wyoming-proxy-azure-stt:
+    image: ghcr.io/hugobloem/wyoming-microsoft-stt-noha
+    restart: unless-stopped
+    container_name: azure-stt
+    network_mode: host
+    ports:
+      - "10300:10300"
+    environment:
+      AZURE_SERVICE_REGION: swedencentral
+      AZURE_SUBSCRIPTION_KEY: ${AZURE_SUBSCRIPTION_KEY}
+    command: --language=en-GB; de-DE --uri=tcp://0.0.0.0:10300
+  wyoming-proxy-azure-tts:
+    image: ghcr.io/hugobloem/wyoming-microsoft-tts-noha
+    container_name: azure-tts
+    network_mode: host
+    ports:
+      - "10200:10200"
+    environment:
+      AZURE_SERVICE_REGION: swedencentral
+      AZURE_SUBSCRIPTION_KEY: ${AZURE_SUBSCRIPTION_KEY}
+    command: --voice=en-GB-SoniaNeural --uri=tcp://0.0.0.0:10200
