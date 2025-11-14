@@ -1,0 +1,1 @@
+docker run --rm --privileged -v "${PWD}":/config --device=/dev/ttyACM0 -it ghcr.io/esphome/esphome run voice_satellite.yaml
