@@ -617,8 +617,8 @@ micro_wake_word:
     - model: https://github.com/kahrendt/microWakeWord/releases/download/stop/stop.json
       id: stop
       internal: true #false
-    #- model:
-    #  id: hey_woodhouse
+    - model: https://github.com/UA-Homelab/homeassistant/tree/main/voice_assistant/microwakeword/models/hey_wuud_hows.json
+      id: hey_woodhouse
   vad:
     probability_cutoff: 0.03 #0.03
   on_wake_word_detected:
